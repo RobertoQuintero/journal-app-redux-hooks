@@ -6,7 +6,7 @@ import { useForm } from "../../hooks/useForm";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
-  const { loading, msgError } = useSelector((state) => state.ui);
+  const { loading } = useSelector((state) => state.ui);
 
   const [formValues, handleInputChange] = useForm({
     email: "abc@abc.com",
@@ -27,7 +27,10 @@ const LoginScreen = () => {
   return (
     <div>
       <h3 className="auth__title">Login</h3>
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className="animate__animated animate__fadeIn animate__faster"
+      >
         <input
           type="text"
           placeholder="Email"
