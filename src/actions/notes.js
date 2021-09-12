@@ -20,9 +20,9 @@ export const startNewNote = () => {
       date: new Date().getTime(),
     };
     const doc = await addDoc(collection(db, `${uid}/journal/notes`), note);
-    console.log(doc.id);
     dispatch(activeNote(doc.id, note));
     dispatch(addNewNote(doc.id, note));
+    return doc.id;
   };
 };
 
