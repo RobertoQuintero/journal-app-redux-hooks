@@ -6,6 +6,7 @@ import {
   startLoadingNotes,
   startNewNote,
   startSaveNote,
+  startUploading,
 } from "../../actions/notes";
 import { db } from "../../firebase/firebase-config";
 import { types } from "../../types/types";
@@ -14,14 +15,26 @@ const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
 const initState = {
   auth: { uid: "TESTING" },
+  notes: {
+    active: {
+      id: "bCek37iI0U0Ny3eH8j9I",
+      title: "hola",
+      body: "mundo",
+    },
+  },
 };
 
 let store = mockStore(initState);
 
+jest.mock("../../helpers/fileUpload", () => ({
+  fileUpload: jest.fn(() => {
+    return Promise.resolve("Cualquierlinlk/cualquierimagen.jpg");
+  }),
+}));
+
 describe("Pruebas en la acciones de notes", () => {
   beforeEach(() => {
     store = mockStore(initState);
-    // store.clearActions();
   });
 
   test("debe crear una nueva nota startNewNote", async () => {
@@ -55,7 +68,6 @@ describe("Pruebas en la acciones de notes", () => {
   test("startloadingNotes debe cargar las notas", async () => {
     await store.dispatch(startLoadingNotes("TESTING"));
     const actions = store.getActions();
-    console.log(actions);
     expect(actions[0]).toEqual({
       type: types.notesLoad,
       payload: expect.any(Array),
@@ -80,11 +92,22 @@ describe("Pruebas en la acciones de notes", () => {
     await store.dispatch(startSaveNote(note));
 
     const actions = store.getActions();
-    console.log(actions);
     expect(actions[0].type).toBe(types.notesUpdated);
     const docRef = doc(db, `/TESTING/journal/notes/${note.id}`);
     const docSnap = await getDoc(docRef);
-    console.log(docSnap.data());
     expect(docSnap.data().title).toBe(note.title);
+  });
+
+  test("startUploading debe de actualizar el url del entry", async () => {
+    const note = {
+      id: "bCek37iI0U0Ny3eH8j9I",
+      url: "Cualquierlinlk/cualquierimagen.jpg",
+    };
+    const file = [];
+    await store.dispatch(startUploading(file));
+
+    const docRef = doc(db, `/TESTING/journal/notes/${note.id}`);
+    const docSnap = await getDoc(docRef);
+    expect(docSnap.data().url).toBe(note.url);
   });
 });

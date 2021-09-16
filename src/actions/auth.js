@@ -15,7 +15,7 @@ const auth = getAuth();
 export const startLoginEmailPassword = (email, password) => {
   return (dispatch) => {
     dispatch(startLoading());
-    signInWithEmailAndPassword(auth, email, password)
+    return signInWithEmailAndPassword(auth, email, password)
       .then(({ user }) => {
         dispatch(login(user.uid, user.displayName));
         dispatch(finishLoading());
@@ -39,7 +39,7 @@ export const startGoogleLogin = () => {
 export const startRegisterWithEmailPasswordName = (email, passowrd, name) => {
   return (dispatch) => {
     // const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, passowrd)
+    return createUserWithEmailAndPassword(auth, email, passowrd)
       .then(async ({ user }) => {
         await updateProfile(auth.currentUser, { displayName: name });
         dispatch(login(user.uid, user.displayName));
